@@ -1,49 +1,49 @@
 resource "azurerm_resource_group" "myterraformgroup" {
 	name     = "${var.resource_group_name}"
-	location = "eastus"
+	location = "${var.location}"
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_virtual_network" "myterraformnetwork" {
 	name                = "${var.virtual_network_name}"
 	address_space       = ["${var.virtual_network_address_space}"]
-	location            = "eastus"
+	location            = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_public_ip" "myterraformpublicip" {
-	name                         = "myPublicIP"
-	location                     = "eastus"
+	name                         = "${var.myterraformpublicip_name}"
+	location                     = "${var.location}"
 	resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
-	public_ip_address_allocation = "dynamic"
+	public_ip_address_allocation = "${var.address_allocation}"
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_public_ip" "myterraformpublicip2" {
-	name                         = "myPublicIP2"
-	location                     = "eastus"
+	name                         = "${var.myterraformpublicip2_name}"
+	location                     = "${var.location}"
 	resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
-	public_ip_address_allocation = "dynamic"
+	public_ip_address_allocation = "${var.address_allocation}"
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_subnet" "myterraformsubnet" {
-	name = "mySubnet"
+	name = "${var.myterraformsubnet_name}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 	virtual_network_name = "${azurerm_virtual_network.myterraformnetwork.name}"
-	address_prefix = "10.0.2.0/24"
+	address_prefix = "${var.myterraformsubnet_address_prefix}"
 }
 resource "azurerm_network_security_group" "myterraformnsg" {
-	name                = "myNetworkSecurityGroup"
-	location            = "eastus"
+	name                = "${var.myterraformnsg_name}"
+	location            = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 
 	security_rule {
@@ -59,12 +59,12 @@ resource "azurerm_network_security_group" "myterraformnsg" {
 	}
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_network_security_group" "myterraformnsg2" {
-	name                = "myNetworkSecurityGroup2"
-	location            = "eastus"
+	name                = "${var.myterraformnsg2_name}"
+	location            = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 
 	security_rule = [ {
@@ -90,42 +90,42 @@ resource "azurerm_network_security_group" "myterraformnsg2" {
 	} ]
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_network_interface" "myterraformnic" {
 
-	name = "myNIC"
-	location = "eastus"
+	name = "${var.myterraformnic_name}"
+	location = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 	network_security_group_id = "${azurerm_network_security_group.myterraformnsg.id}"
 
 	ip_configuration {
-		name = "myNicConfiguration"
+		name = "${var.myterraformnic_ip_configuration}"
 		subnet_id = "${azurerm_subnet.myterraformsubnet.id}"
-		private_ip_address_allocation = "dynamic"
+		private_ip_address_allocation = "${var.address_allocation}"
 		public_ip_address_id = "${azurerm_public_ip.myterraformpublicip.id}"
 	}
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_network_interface" "myterraformnic2" {
-	name= "myNIC2"
-	location = "eastus"
+	name= "${var.myterraformnic2_name}"
+	location = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 	network_security_group_id = "${azurerm_network_security_group.myterraformnsg2.id}"
 
 	ip_configuration {
-		name = "myNic2Configuration"
+		name = "${var.myterraformnic2_ip_configuration}"
 		subnet_id = "${azurerm_subnet.myterraformsubnet.id}"
-		private_ip_address_allocation = "dynamic"
+		private_ip_address_allocation = "${var.address_allocation}"
 		public_ip_address_id = "${azurerm_public_ip.myterraformpublicip2.id}"
 	}
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "random_id" "randomId" {
@@ -139,31 +139,31 @@ resource "random_id" "randomId" {
 resource "azurerm_storage_account" "mystorageaccount" {
 	name = "diag${random_id.randomId.hex}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
-	location = "eastus"
-	account_replication_type = "LRS"
-	account_tier = "Standard"
+	location = "${var.location}"
+	account_replication_type = "${var.storage_account_replication_type}"
+	account_tier = "${var.storage_account_tiers}"
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_storage_account" "mystorageaccount2" {
 	name = "diag${random_id.randomId.hex}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
-	location = "eastus"
-	account_replication_type = "LRS"
-	account_tier = "Standard"
+	location = "${var.location}"
+	account_replication_type = "${var.storage_account_replication_type}"
+	account_tier = "${var.storage_account_tiers}"
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_virtual_machine" "myterraformfirstvm" {
-	name = "myVM"
-	location = "eastus"
+	name = "${var.myterraformfirstvm_name}"
+	location = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 	network_interface_ids = ["${azurerm_network_interface.myterraformnic.id}"]
-	vm_size = "Standard_DS1_v2"
+	vm_size = "${var.virtual_machine_vm_size}"
 
 	storage_os_disk {
 		name = "myOsDisk"
@@ -185,28 +185,28 @@ resource "azurerm_virtual_machine" "myterraformfirstvm" {
 	}
 
 	os_profile_linux_config {
-		disable_password_authentication = true
+		disable_password_authentication = "${var.boolean_true}"
 		ssh_keys {
-			path ="/home/stage/.ssh/authorized_keys"
-			key_data = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDHfYmi4iacSVl5PDtAkNYHLmOq5BKy76Og16siX6JztyjUYlCsKg+i+3sY/BTeishgQ9pLyo9zIWutVTafUqfL/IELt8/sSTpviAnfxXo6D2/xFOy1SwKsSuuTabl9LDVAE4mLX9DzPECeTJXf1XZ+8YtHvcZ8jjPt/bVFxB3v08rOVe/uRDtb+yVawI2OO1XoMEPIZ2699ZpVi8N4ujo1FVR8M1+T2DKAcup4Q1Oka7a5nvS3UVQfVIQYPJ1u3HXTSVhiDy1SMv/HHhhxWzKyZfQfefnNrNZs/ZsFUWRGemgEhjLfzhTrtrceyIZY4WE+Y+Oz+SSBnZIE70TA/s5da5hM6cCU12pWpMAsvXz21ClonMcZXWhCswanuat/5xl3g4q6BrFE+QBLmnman7YUe1MzoCgH/g5zEDxDTg7rPFfR9UYywCnT4cC9dHYFahZma3+ZI9L6+7tPHbsVvy8QLKtmnVjRnxRwDSCLV2AmLHQne0Cgzep5Hxq+vDh/aNnVKukp0rcxCyC6GqRUxzq14tEOMLTOXSL+JftxHafuPNnPcTU1C/m8maxtrXCYw10FAu2ZwSTRjOH2bvQf6Fo9B1NSkK0HeM0V8nyRVcPvqNcHuAZqt8n32NEhlZP4EZkGIEKwJWAbzspftS3sGogaMyAXf7TWVY+kJkKH/BeXWw== samodev1725@gmail.com"
+			path ="${var.ssh_keys_path}"
+			key_data = "${var.ssh_keys_data}"
 		}
 	}
 
 	boot_diagnostics {
-		enabled = "true"
+		enabled = "${var.boolean_true}"
 		storage_uri = "${azurerm_storage_account.mystorageaccount.primary_blob_endpoint}"
 	}
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
 resource "azurerm_virtual_machine" "myterraformsecondvm" {
-	name = "myVM2"
-	location = "eastus"
+	name = "${var.myterraformsecondvm_name}"
+	location = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 	network_interface_ids = ["${azurerm_network_interface.myterraformnic2.id}"]
-	vm_size = "Standard_DS1_v2"
+	vm_size = "${var.virtual_machine_vm_size}"
 
 	storage_os_disk {
 		name = "myOsDisk2"
@@ -229,15 +229,15 @@ resource "azurerm_virtual_machine" "myterraformsecondvm" {
 	}
 
 	os_profile_linux_config {
-		disable_password_authentication = false
+		disable_password_authentication = "${var.boolean_false}"
 	}
 
 	boot_diagnostics {
-		enabled = "true"
+		enabled = "${var.boolean_true}"
 		storage_uri = "${azurerm_storage_account.mystorageaccount.primary_blob_endpoint}"
 	}
 
 	tags {
-		environment = "Terraform Demo"
+		environment = "${var.environment}"
 	}
 }
