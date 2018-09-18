@@ -1,13 +1,13 @@
 resource "azurerm_resource_group" "myterraformgroup" {
-	name     = "myResourceGroup"
+	name     = "${var.resource_group_name}"
 	location = "eastus"
 	tags {
 		environment = "Terraform Demo"
 	}
 }
 resource "azurerm_virtual_network" "myterraformnetwork" {
-	name                = "myVnet"
-	address_space       = ["10.0.0.0/16"]
+	name                = "${var.virtual_network_name}"
+	address_space       = ["${var.virtual_network_address_space}"]
 	location            = "eastus"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 
