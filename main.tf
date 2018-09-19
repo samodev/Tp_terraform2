@@ -16,25 +16,25 @@ resource "azurerm_virtual_network" "myterraformnetwork" {
 	}
 }
 resource "azurerm_public_ip" "myterraformpublicip" {
-	name                         = "${var.myterraformpublicip_name}"
+	name                         = "publicIP${count.index + 1}"
 	location                     = "${var.location}"
 	resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
-	public_ip_address_allocation = "${var.address_allocation}"
+	public_ip_address_allocation = "${var.address_allocation_dynamic}"
 
 	tags {
 		environment = "${var.environment}"
 	}
 }
-resource "azurerm_public_ip" "myterraformpublicip2" {
-	name                         = "${var.myterraformpublicip2_name}"
-	location                     = "${var.location}"
-	resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
-	public_ip_address_allocation = "${var.address_allocation}"
-
-	tags {
-		environment = "${var.environment}"
-	}
-}
+//resource "azurerm_public_ip" "myterraformpublicip2" {
+//	name                         = "${var.myterraformpublicip2_name}"
+//	location                     = "${var.location}"
+//	resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
+//	public_ip_address_allocation = "${var.address_allocation}"
+//
+//	tags {
+//		environment = "${var.environment}"
+//	}
+//}
 resource "azurerm_subnet" "myterraformsubnet" {
 	name = "${var.myterraformsubnet_name}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
@@ -106,7 +106,8 @@ resource "azurerm_network_interface" "myterraformnic" {
 		name = "${var.myterraformnic_ip_configuration}"
 		subnet_id = "${azurerm_subnet.myterraformsubnet.id}"
 		private_ip_address_allocation = "${var.address_allocation}"
-		public_ip_address = "${element(var.ip_addresses, count.index)}"
+		private_ip_address = "${element(var.ip_addresses, count.index)}"
+		public_ip_address_id = "${element(azurerm_public_ip.myterraformpublicip.*.id, count.index + 1)}"
 	}
 
 	tags {
