@@ -95,39 +95,41 @@ resource "azurerm_network_security_group" "myterraformnsg2" {
 }
 resource "azurerm_network_interface" "myterraformnic" {
 
-	name = "${var.myterraformnic_name}"
+	name = "nic${count.index + 1}"
 	location = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
 	network_security_group_id = "${azurerm_network_security_group.myterraformnsg.id}"
+	count = "${length(var.ip_addresses)}"
+
 
 	ip_configuration {
 		name = "${var.myterraformnic_ip_configuration}"
 		subnet_id = "${azurerm_subnet.myterraformsubnet.id}"
 		private_ip_address_allocation = "${var.address_allocation}"
-		public_ip_address_id = "${azurerm_public_ip.myterraformpublicip.id}"
+		public_ip_address = "${element(var.ip_addresses, count.index)}"
 	}
 
 	tags {
 		environment = "${var.environment}"
 	}
 }
-resource "azurerm_network_interface" "myterraformnic2" {
-	name= "${var.myterraformnic2_name}"
-	location = "${var.location}"
-	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
-	network_security_group_id = "${azurerm_network_security_group.myterraformnsg2.id}"
-
-	ip_configuration {
-		name = "${var.myterraformnic2_ip_configuration}"
-		subnet_id = "${azurerm_subnet.myterraformsubnet.id}"
-		private_ip_address_allocation = "${var.address_allocation}"
-		public_ip_address_id = "${azurerm_public_ip.myterraformpublicip2.id}"
-	}
-
-	tags {
-		environment = "${var.environment}"
-	}
-}
+//resource "azurerm_network_interface" "myterraformnic2" {
+//	name= "${var.myterraformnic2_name}"
+//	location = "${var.location}"
+//	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
+//	network_security_group_id = "${azurerm_network_security_group.myterraformnsg2.id}"
+//
+//	ip_configuration {
+//		name = "${var.myterraformnic2_ip_configuration}"
+//		subnet_id = "${azurerm_subnet.myterraformsubnet.id}"
+//		private_ip_address_allocation = "${var.address_allocation}"
+//		public_ip_address_id = "${azurerm_public_ip.myterraformpublicip2.id}"
+//	}
+//
+//	tags {
+//		environment = "${var.environment}"
+//	}
+//}
 resource "random_id" "randomId" {
 	keepers = {
 		# Generate a new ID only when a new resource group is defined
@@ -147,26 +149,27 @@ resource "azurerm_storage_account" "mystorageaccount" {
 		environment = "${var.environment}"
 	}
 }
-resource "azurerm_storage_account" "mystorageaccount2" {
-	name = "diag${random_id.randomId.hex}"
-	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
+//resource "azurerm_storage_account" "mystorageaccount2" {
+//	name = "diag${random_id.randomId.hex}"
+//	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
+//	location = "${var.location}"
+//	account_replication_type = "${var.storage_account_replication_type}"
+//	account_tier = "${var.storage_account_tiers}"
+//
+//	tags {
+//		environment = "${var.environment}"
+//	}
+//}
+resource "azurerm_virtual_machine" "myterraformvm" {
+	name = "vm${count.index + 1}"
 	location = "${var.location}"
-	account_replication_type = "${var.storage_account_replication_type}"
-	account_tier = "${var.storage_account_tiers}"
-
-	tags {
-		environment = "${var.environment}"
-	}
-}
-resource "azurerm_virtual_machine" "myterraformfirstvm" {
-	name = "${var.myterraformfirstvm_name}"
-	location = "${var.location}"
 	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
-	network_interface_ids = ["${azurerm_network_interface.myterraformnic.id}"]
+	network_interface_ids = ["${element(azurerm_network_interface.myterraformnic.*.id, count.index)}"]
 	vm_size = "${var.virtual_machine_vm_size}"
+	count = "${length(var.ip_addresses)}"
 
 	storage_os_disk {
-		name = "myOsDisk"
+		name = "myOsDisk${count.index + 1}"
 		caching = "ReadWrite"
 		create_option = "FromImage"
 		managed_disk_type = "Premium_LRS"
@@ -200,44 +203,45 @@ resource "azurerm_virtual_machine" "myterraformfirstvm" {
 	tags {
 		environment = "${var.environment}"
 	}
+
 }
-resource "azurerm_virtual_machine" "myterraformsecondvm" {
-	name = "${var.myterraformsecondvm_name}"
-	location = "${var.location}"
-	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
-	network_interface_ids = ["${azurerm_network_interface.myterraformnic2.id}"]
-	vm_size = "${var.virtual_machine_vm_size}"
-
-	storage_os_disk {
-		name = "myOsDisk2"
-		caching = "ReadWrite"
-		create_option = "FromImage"
-		managed_disk_type = "Premium_LRS"
-	}
-
-	storage_image_reference {
-		publisher = "Canonical"
-		offer = "UbuntuServer"
-		sku = "16.04.0-LTS"
-		version ="latest"
-	}
-
-	os_profile {
-		computer_name = "myVM2"
-		admin_username = "stage"
-		admin_password = "cangetin123!"
-	}
-
-	os_profile_linux_config {
-		disable_password_authentication = "${var.boolean_false}"
-	}
-
-	boot_diagnostics {
-		enabled = "${var.boolean_true}"
-		storage_uri = "${azurerm_storage_account.mystorageaccount.primary_blob_endpoint}"
-	}
-
-	tags {
-		environment = "${var.environment}"
-	}
-}
+//resource "azurerm_virtual_machine" "myterraformsecondvm" {
+//	name = "${var.myterraformsecondvm_name}"
+//	location = "${var.location}"
+//	resource_group_name = "${azurerm_resource_group.myterraformgroup.name}"
+//	network_interface_ids = ["${azurerm_network_interface.myterraformnic2.id}"]
+//	vm_size = "${var.virtual_machine_vm_size}"
+//
+//	storage_os_disk {
+//		name = "myOsDisk2"
+//		caching = "ReadWrite"
+//		create_option = "FromImage"
+//		managed_disk_type = "Premium_LRS"
+//	}
+//
+//	storage_image_reference {
+//		publisher = "Canonical"
+//		offer = "UbuntuServer"
+//		sku = "16.04.0-LTS"
+//		version ="latest"
+//	}
+//
+//	os_profile {
+//		computer_name = "myVM2"
+//		admin_username = "stage"
+//		admin_password = "cangetin123!"
+//	}
+//
+//	os_profile_linux_config {
+//		disable_password_authentication = "${var.boolean_false}"
+//	}
+//
+//	boot_diagnostics {
+//		enabled = "${var.boolean_true}"
+//		storage_uri = "${azurerm_storage_account.mystorageaccount.primary_blob_endpoint}"
+//	}
+//
+//	tags {
+//		environment = "${var.environment}"
+//	}
+//}

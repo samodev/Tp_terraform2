@@ -31,7 +31,13 @@ virtual_network_address_space = "10.0.0.0/16"
 
 myterraformpublicip_name  = "myPublicIP"
 myterraformpublicip2_name = "myPublicIP2"
-address_allocation        = "dynamic"
+address_allocation        = "Static"
+address_allocation_dynamic        = "dynamic"
+
+#########################################################
+################# PRIVATE IP ############################
+
+ip_addresses = ["10.0.2.5", "10.0.2.6", "10.0.2.7", "10.0.2.8"]
 
 #########################################################
 ################## SUBNET ###############################
@@ -52,6 +58,8 @@ myterraformnic_name = "myNIC"
 myterraformnic2_name = "myNIC2"
 myterraformnic_ip_configuration = "myNicConfiguration"
 myterraformnic2_ip_configuration = "myNic2Configuration"
+
+
 
 #########################################################
 ############## STORAGE ACCOUNT ##########################

@@ -32,6 +32,12 @@ variable "virtual_network_address_space"  {}
 variable "myterraformpublicip_name"   {}
 variable "myterraformpublicip2_name"  {}
 variable "address_allocation"         {}
+variable "address_allocation_dynamic" {}
+
+#########################################################
+################### PRIVATE IP ##########################
+
+variable "ip_addresses" {type="list"}
 
 #########################################################
 ################## SUBNET ###############################
