@@ -20,6 +20,7 @@ resource "azurerm_public_ip" "myterraformpublicip" {
 	location                     = "${var.location}"
 	resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
 	public_ip_address_allocation = "${var.address_allocation_dynamic}"
+	count = "${length(var.ip_addresses)}"
 
 	tags {
 		environment = "${var.environment}"
